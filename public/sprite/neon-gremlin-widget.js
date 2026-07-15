@@ -361,20 +361,22 @@
     }
 
     homeHero = nextHero;
-    if (getComputedStyle(homeHero).position === "static") {
-      homeHero.style.position = "relative";
-    }
-    if (canvas.parentElement !== homeHero) homeHero.appendChild(canvas);
+    if (canvas.parentElement !== document.body) document.body.appendChild(canvas);
 
-    const heroWidth = homeHero.getBoundingClientRect().width;
+    const heroRect = homeHero.getBoundingClientRect();
+    const heroWidth = heroRect.width;
     const wideHero = heroWidth >= 900;
     cssScale = wideHero ? preferredScale : 1;
     canvas.style.position = "absolute";
-    canvas.style.left = "auto";
+    const rightInset = wideHero ? 70 : 4;
+    const topInset = heroWidth < 520 ? 108 : 52;
+    canvas.style.left = Math.round(
+      heroRect.right + window.scrollX - rightInset - W * cssScale
+    ) + "px";
     canvas.style.bottom = "auto";
-    canvas.style.right = wideHero ? "70px" : "4px";
-    canvas.style.top = heroWidth < 520 ? "108px" : "52px";
-    canvas.style.zIndex = "30";
+    canvas.style.right = "auto";
+    canvas.style.top = Math.round(heroRect.top + window.scrollY + topInset) + "px";
+    canvas.style.zIndex = "2147483000";
     canvas.style.display = "block";
     canvas.style.width = W * cssScale + "px";
     canvas.style.height = H * cssScale + "px";
