@@ -236,6 +236,11 @@
   };
 
   const canvas = document.createElement("canvas");
+  const loaderScript = document.currentScript;
+  const requestedScale = Number(loaderScript?.dataset.scale || 1);
+  const preferredScale = Number.isFinite(requestedScale)
+    ? Math.max(1, Math.min(3, Math.round(requestedScale)))
+    : 1;
   canvas.width = W;
   canvas.height = H;
   canvas.id = "merry-neon-gremlin";
@@ -252,7 +257,7 @@
   const reducedQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   let motionEnabled = !reducedQuery.matches;
-  let cssScale = window.innerWidth < 600 ? 1 : 2;
+  let cssScale = preferredScale;
   let x = 12;
   let direction = 1;
   let speed = 28;
@@ -301,7 +306,7 @@
   }
 
   function sizeSprite() {
-    cssScale = window.innerWidth < 600 ? 1 : 2;
+    cssScale = preferredScale;
     canvas.style.width = W * cssScale + "px";
     canvas.style.height = H * cssScale + "px";
     x = Math.min(x, Math.max(4, window.innerWidth - W * cssScale - 4));
@@ -407,4 +412,3 @@
   if (document.body) mount();
   else document.addEventListener("DOMContentLoaded", mount, { once: true });
 })();
-
