@@ -17,7 +17,7 @@ Once the file is served from the site, add this just before `</body>`:
 <script src="/sprite/neon-gremlin-widget.js"></script>
 ```
 
-The widget finds the HOME-page `AstralTrash` heading and anchors its transparent Canvas inside that hero section. It hides automatically when that heading is absent on another section. It uses `pointer-events: none`, so it does not block buttons or links. A document-level hit test detects clicks on her bounding box without canceling the underlying page click.
+The widget finds the HOME-page `AstralTrash` heading and pins its transparent Canvas to that hero section's measured coordinates. The Canvas stays outside React's managed DOM, so tab changes cannot accidentally delete it. It hides automatically when the title is absent on another section. It uses `pointer-events: none`, so it does not block buttons or links. A document-level hit test detects clicks on her bounding box without canceling the underlying page click.
 
 The roaming widget defaults to native 64×128 so it stays small on a busy page. To enlarge it without blurring, set an integer `data-scale` from 1–3 on the loader:
 
