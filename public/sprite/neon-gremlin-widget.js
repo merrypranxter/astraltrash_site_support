@@ -190,18 +190,29 @@
     "headphones", "frontHair", "leftArm", "accessories"
   ];
 
+  // Split the shoe pixels away from the pants at runtime so each foot can
+  // shuffle independently without duplicating the editable source data.
+  const LEG_BASE = PARTS.legs.filter(([, , y]) => y < 111);
+  const FOOT_RECTS = PARTS.legs.filter(([, , y]) => y >= 111);
+  const LEFT_FOOT = FOOT_RECTS.filter(([, x, , w]) => x + w / 2 < 33);
+  const RIGHT_FOOT = FOOT_RECTS.filter(([, x, , w]) => x + w / 2 >= 33);
+
   const FRAMES = {
     idle: { offsets: {}, overlays: ["sparkleOverlay"] },
     walkA: {
       offsets: {
         backHair: [0, -1], head: [0, -1], headphones: [0, -1],
         frontHair: [0, -1], torso: [0, -1], leftArm: [1, -1],
-        rightArm: [-1, -1], accessories: [0, -1]
+        rightArm: [-1, -1], accessories: [0, -1],
+        leftFoot: [-1, -1], rightFoot: [1, 0]
       },
       overlays: ["sparkleOverlay"]
     },
     walkB: {
-      offsets: { leftArm: [-1, 0], rightArm: [1, 0] },
+      offsets: {
+        leftArm: [-1, 0], rightArm: [1, 0],
+        leftFoot: [1, 0], rightFoot: [-1, -1]
+      },
       overlays: ["sparkleOverlay"]
     },
     blink: {
@@ -216,7 +227,8 @@
       offsets: {
         backHair: [-2, -3], head: [-1, -2], headphones: [-1, -2],
         frontHair: [-1, -2], torso: [-1, -1], leftArm: [-2, -4],
-        rightArm: [1, -1], accessories: [-1, -1]
+        rightArm: [1, -1], accessories: [-1, -1],
+        leftFoot: [-1, -2], rightFoot: [1, 0]
       },
       overlays: ["sparkleOverlay"]
     },
@@ -224,12 +236,16 @@
       offsets: {
         backHair: [2, -2], head: [1, -1], headphones: [1, -1],
         frontHair: [1, -1], torso: [1, -1], leftArm: [1, -1],
-        rightArm: [2, -3], accessories: [1, -1]
+        rightArm: [2, -3], accessories: [1, -1],
+        leftFoot: [1, 0], rightFoot: [-1, -2]
       },
       overlays: ["blinkOverlay", "sparkleOverlay"]
     },
     glitch: {
-      offsets: { backHair: [1, -1], head: [-1, 0], frontHair: [1, 0] },
+      offsets: {
+        backHair: [1, -1], head: [-1, 0], frontHair: [1, 0],
+        leftFoot: [-2, 0], rightFoot: [2, -1]
+      },
       overlays: ["sparkleOverlay"],
       glitch: true
     }
@@ -237,6 +253,7 @@
 
   const canvas = document.createElement("canvas");
   const loaderScript = document.currentScript;
+  const demoMode = loaderScript?.dataset.demo === "true";
   const requestedScale = Number(loaderScript?.dataset.scale || 1);
   const preferredScale = Number.isFinite(requestedScale)
     ? Math.max(1, Math.min(3, Math.round(requestedScale)))
@@ -246,10 +263,10 @@
   canvas.id = "merry-neon-gremlin";
   canvas.setAttribute("aria-hidden", "true");
   canvas.style.cssText = [
-    "position:fixed", "left:12px", "bottom:8px", "z-index:2147483000",
-    "display:block", "pointer-events:none", "image-rendering:pixelated",
+    "position:absolute", "right:4px", "top:52px", "z-index:30",
+    "display:none", "pointer-events:none", "image-rendering:pixelated",
     "image-rendering:crisp-edges", "transform-origin:center bottom",
-    "will-change:left,bottom,transform", "contain:layout paint style"
+    "will-change:transform", "contain:layout paint style"
   ].join(";");
 
   const ctx = canvas.getContext("2d", { alpha: true });
@@ -258,16 +275,13 @@
 
   let motionEnabled = !reducedQuery.matches;
   let cssScale = preferredScale;
-  let x = 12;
-  let direction = 1;
-  let speed = 28;
-  let lastTime = performance.now();
   let lastFrameName = "";
-  let danceUntil = 0;
-  let pauseUntil = 0;
-  let nextChaos = lastTime + 7000 + Math.random() * 8000;
+  let boostedUntil = 0;
   let raf = 0;
   let destroyed = false;
+  let homeHero = null;
+  let observer = null;
+  let placementQueued = false;
 
   function drawRects(rects, dx = 0, dy = 0, tint = null) {
     for (const [color, px, py, pw, ph] of rects) {
@@ -279,7 +293,16 @@
   function drawBody(frame, tint = null, extraX = 0, extraY = 0) {
     for (const partName of DRAW_ORDER) {
       const [dx = 0, dy = 0] = frame.offsets[partName] || [];
-      drawRects(PARTS[partName], dx + extraX, dy + extraY, tint);
+      if (partName !== "legs") {
+        drawRects(PARTS[partName], dx + extraX, dy + extraY, tint);
+        continue;
+      }
+
+      drawRects(LEG_BASE, dx + extraX, dy + extraY, tint);
+      const [leftX = 0, leftY = 0] = frame.offsets.leftFoot || [];
+      const [rightX = 0, rightY = 0] = frame.offsets.rightFoot || [];
+      drawRects(LEFT_FOOT, dx + leftX + extraX, dy + leftY + extraY, tint);
+      drawRects(RIGHT_FOOT, dx + rightX + extraX, dy + rightY + extraY, tint);
     }
   }
 
@@ -305,12 +328,62 @@
     }
   }
 
-  function sizeSprite() {
-    cssScale = preferredScale;
+  function findHomeHero() {
+    const title = [...document.querySelectorAll("h1")].find((heading) =>
+      heading.textContent?.replace(/\s/g, "") === "AstralTrash"
+    );
+    return title?.closest("section.hero") || title?.parentElement || null;
+  }
+
+  function placeSprite() {
+    placementQueued = false;
+
+    if (demoMode) {
+      if (canvas.parentElement !== document.body) document.body.appendChild(canvas);
+      cssScale = preferredScale;
+      canvas.style.position = "fixed";
+      canvas.style.left = "12px";
+      canvas.style.right = "auto";
+      canvas.style.top = "auto";
+      canvas.style.bottom = "8px";
+      canvas.style.zIndex = "2147483000";
+      canvas.style.display = "block";
+      canvas.style.width = W * cssScale + "px";
+      canvas.style.height = H * cssScale + "px";
+      return;
+    }
+
+    const nextHero = findHomeHero();
+    if (!nextHero) {
+      homeHero = null;
+      canvas.style.display = "none";
+      return;
+    }
+
+    homeHero = nextHero;
+    if (getComputedStyle(homeHero).position === "static") {
+      homeHero.style.position = "relative";
+    }
+    if (canvas.parentElement !== homeHero) homeHero.appendChild(canvas);
+
+    const heroWidth = homeHero.getBoundingClientRect().width;
+    const wideHero = heroWidth >= 900;
+    cssScale = wideHero ? preferredScale : 1;
+    canvas.style.position = "absolute";
+    canvas.style.left = "auto";
+    canvas.style.bottom = "auto";
+    canvas.style.right = wideHero ? "70px" : "4px";
+    canvas.style.top = heroWidth < 520 ? "108px" : "52px";
+    canvas.style.zIndex = "30";
+    canvas.style.display = "block";
     canvas.style.width = W * cssScale + "px";
     canvas.style.height = H * cssScale + "px";
-    x = Math.min(x, Math.max(4, window.innerWidth - W * cssScale - 4));
-    canvas.style.left = Math.round(x) + "px";
+  }
+
+  function schedulePlacement() {
+    if (placementQueued) return;
+    placementQueued = true;
+    requestAnimationFrame(placeSprite);
   }
 
   function dance(duration = 2400) {
@@ -319,50 +392,24 @@
       window.setTimeout(() => render("idle"), 260);
       return;
     }
-    danceUntil = performance.now() + duration;
+    boostedUntil = performance.now() + duration;
     lastFrameName = "";
   }
 
   function pickFrame(now) {
-    if (now < danceUntil) {
-      const danceFrames = ["danceLeft", "blink", "danceRight", "glitch"];
-      return danceFrames[Math.floor(now / 135) % danceFrames.length];
-    }
-    return Math.floor(now / 260) % 2 ? "walkA" : "walkB";
+    const step = Math.floor(now / 170);
+    const danceLoop = [
+      "danceLeft", "walkA", "danceRight", "walkB",
+      "danceLeft", "blink", "danceRight", "walkB"
+    ];
+    if (now < boostedUntil && step % 4 === 3) return "glitch";
+    if (step % 24 === 23) return "glitch";
+    return danceLoop[step % danceLoop.length];
   }
 
   function tick(now) {
     if (destroyed) return;
-    const dt = Math.min(0.05, (now - lastTime) / 1000);
-    lastTime = now;
-
-    if (motionEnabled) {
-      if (now > nextChaos && now >= danceUntil) {
-        danceUntil = now + 1500;
-        nextChaos = now + 9000 + Math.random() * 11000;
-      }
-
-      if (now >= danceUntil && now >= pauseUntil) {
-        x += direction * speed * dt;
-        const maxX = Math.max(4, window.innerWidth - W * cssScale - 4);
-        if (x >= maxX) {
-          x = maxX;
-          direction = -1;
-          pauseUntil = now + 550;
-        } else if (x <= 4) {
-          x = 4;
-          direction = 1;
-          pauseUntil = now + 550;
-        }
-      }
-
-      const dancing = now < danceUntil;
-      const bounce = dancing ? [0, 3, 7, 3][Math.floor(now / 110) % 4] : 0;
-      canvas.style.left = Math.round(x) + "px";
-      canvas.style.bottom = 8 + bounce + "px";
-      canvas.style.transform = direction < 0 ? "scaleX(-1)" : "scaleX(1)";
-      render(pickFrame(now));
-    }
+    if (motionEnabled && canvas.style.display !== "none") render(pickFrame(now));
 
     raf = requestAnimationFrame(tick);
   }
@@ -378,7 +425,6 @@
   function onReducedMotion(event) {
     motionEnabled = !event.matches;
     if (!motionEnabled) {
-      canvas.style.bottom = "8px";
       render("idle");
     }
   }
@@ -391,7 +437,8 @@
   function destroy() {
     destroyed = true;
     cancelAnimationFrame(raf);
-    window.removeEventListener("resize", sizeSprite);
+    observer?.disconnect();
+    window.removeEventListener("resize", schedulePlacement);
     document.removeEventListener("pointerdown", onPointerDown, true);
     reducedQuery.removeEventListener?.("change", onReducedMotion);
     canvas.remove();
@@ -400,11 +447,16 @@
 
   function mount() {
     document.body.appendChild(canvas);
-    sizeSprite();
+    placeSprite();
     render("idle");
-    window.addEventListener("resize", sizeSprite, { passive: true });
+    window.addEventListener("resize", schedulePlacement, { passive: true });
     document.addEventListener("pointerdown", onPointerDown, true);
     reducedQuery.addEventListener?.("change", onReducedMotion);
+    observer = new MutationObserver(schedulePlacement);
+    observer.observe(document.querySelector("#root") || document.body, {
+      childList: true,
+      subtree: true
+    });
     raf = requestAnimationFrame(tick);
   }
 
