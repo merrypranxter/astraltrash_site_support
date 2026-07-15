@@ -19,7 +19,11 @@ Once the file is served from the site, add this just before `</body>`:
 
 The widget creates its own transparent fixed Canvas. It uses `pointer-events: none`, so it does not block buttons or links. A document-level hit test detects clicks on her bounding box without canceling the underlying page click.
 
-Desktop display is 128×256 (integer 2×). Screens below 600px use the native 64×128 size. Both preserve hard pixels.
+The roaming widget defaults to native 64×128 so it stays small on a busy page. To enlarge it without blurring, set an integer `data-scale` from 1–3 on the loader:
+
+```html
+<script data-scale="2" src="/sprite/neon-gremlin-widget.js"></script>
+```
 
 ## Tiny control API
 
