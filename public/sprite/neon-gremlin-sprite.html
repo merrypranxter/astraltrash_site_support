@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Neon Gremlin — Code-Generated Pixel Sprite</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --void: #090612;
+      --panel: #151026;
+      --ink: #28183d;
+      --pink: #ff2bad;
+      --cyan: #18e7f2;
+      --lime: #9dff38;
+      --yellow: #ffe04b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #fff8ff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background:
+        radial-gradient(circle at 18% 12%, #5d1263 0 1px, transparent 2px),
+        radial-gradient(circle at 84% 27%, #0f6a73 0 1px, transparent 2px),
+        linear-gradient(135deg, #080510, #150820 45%, #061319);
+      background-size: 43px 43px, 67px 67px, auto;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .12;
+      background: repeating-linear-gradient(0deg, transparent 0 3px, #ffffff 4px);
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 60px;
+    }
+
+    header { margin-bottom: 22px; }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 12px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 6px 0 4px;
+      max-width: 900px;
+      color: #fff;
+      font: 900 clamp(29px, 6vw, 64px)/.95 system-ui, sans-serif;
+      letter-spacing: -.055em;
+      text-shadow: 3px 0 var(--pink), -3px 0 var(--cyan);
+    }
+
+    .lede {
+      max-width: 760px;
+      margin: 13px 0 0;
+      color: #d9cde9;
+      line-height: 1.55;
+    }
+
+    .workbench {
+      display: grid;
+      grid-template-columns: minmax(360px, 1.15fr) minmax(280px, .85fr);
+      gap: 18px;
+    }
+
+    .panel {
+      position: relative;
+      border: 2px solid #4c3269;
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      box-shadow: 8px 8px 0 #05030b, 10px 10px 0 #ff2bad66;
+    }
+
+    .preview {
+      min-height: 650px;
+      display: grid;
+      place-items: center;
+      padding: 54px 20px 24px;
+      overflow: auto;
+      background-color: #201933;
+      background-image:
+        linear-gradient(45deg, #2c2440 25%, transparent 25%),
+        linear-gradient(-45deg, #2c2440 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #2c2440 75%),
+        linear-gradient(-45deg, transparent 75%, #2c2440 75%);
+      background-size: 24px 24px;
+      background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+    }
+
+    .panel-label {
+      position: absolute;
+      z-index: 2;
+      top: 0;
+      left: 0;
+      padding: 8px 11px;
+      color: #100719;
+      background: var(--lime);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    canvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    #spriteCanvas { touch-action: manipulation; }
+
+    .side {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .controls, .specimen, .readme { padding: 48px 18px 18px; }
+
+    .control-row {
+      display: grid;
+      grid-template-columns: 92px 1fr 48px;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    input[type="range"] { accent-color: var(--pink); width: 100%; }
+
+    output {
+      color: var(--yellow);
+      font-weight: 900;
+      text-align: right;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      padding: 13px 15px;
+      color: #0c0612;
+      background: var(--pink);
+      font: 900 13px/1 ui-monospace, monospace;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      box-shadow: 4px 4px 0 var(--cyan);
+      cursor: pointer;
+    }
+
+    button:hover { background: #ff69c8; }
+    button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 4px; }
+
+    #widgetDanceButton {
+      margin-top: 12px;
+      background: var(--cyan);
+      box-shadow: 4px 4px 0 var(--lime);
+    }
+
+    .pose-readout {
+      margin: 17px 0 0;
+      color: #bfb0d6;
+      font-size: 12px;
+    }
+
+    .pose-readout b { color: var(--cyan); }
+
+    .native-wrap {
+      min-height: 155px;
+      display: flex;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .native-wrap p {
+      margin: 0;
+      color: #bfb0d6;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .readme {
+      margin-top: 18px;
+    }
+
+    .readme-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      color: var(--yellow);
+      font-size: 15px;
+      letter-spacing: .05em;
+    }
+
+    .readme p, .readme li {
+      color: #cfc4dd;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .readme ul { margin: 8px 0 0; padding-left: 18px; }
+    code { color: var(--cyan); }
+
+    @media (max-width: 820px) {
+      .workbench { grid-template-columns: 1fr; }
+      .preview { min-height: 580px; }
+      .readme-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="eyebrow">64 × 128 / canvas / zero smooth bullshit</div>
+      <h1>NEON GREMLIN<br>SPRITE LAB</h1>
+      <p class="lede">A deliberately redrawn, code-generated pixel character. Every visible mark comes from named palette colors and editable integer rectangles—no source-image tracing, filters, vectors, or embedded bitmap.</p>
+    </header>
+
+    <section class="workbench" aria-label="Sprite proof of concept">
+      <div class="panel preview">
+        <span class="panel-label">transparent canvas / checkerboard behind it</span>
+        <canvas id="spriteCanvas" width="64" height="128" aria-label="Enlarged neon pixel-art character"></canvas>
+      </div>
+
+      <aside class="side">
+        <section class="panel controls">
+          <span class="panel-label">controls</span>
+          <div class="control-row">
+            <label for="scale">DISPLAY</label>
+            <input id="scale" type="range" min="3" max="8" value="5" step="1">
+            <output id="scaleOut" for="scale">5×</output>
+          </div>
+          <button id="poseButton" type="button">activate tiny chaos</button>
+          <button id="widgetDanceButton" type="button">make the loose one dance</button>
+          <p class="pose-readout">POSE: <b id="poseName">IDLE / STANDING</b></p>
+        </section>
+
+        <section class="panel specimen">
+          <span class="panel-label">native-size bullshit detector</span>
+          <div class="native-wrap">
+            <canvas id="nativeCanvas" width="64" height="128" aria-label="Sprite at its native 64 by 128 pixel size"></canvas>
+            <p>If the silhouette still reads here, the clusters are doing their damn job. This preview is a literal 1× render.</p>
+          </div>
+        </section>
+      </aside>
+    </section>
+
+    <section class="panel readme">
+      <span class="panel-label">README / mutation instructions</span>
+      <div class="readme-grid">
+        <div>
+          <h2>Where the editable stuff lives</h2>
+          <p><code>PALETTE</code> contains every reusable color. <code>PARTS</code> contains the sprite as intentional rectangles in the format <code>[colorName, x, y, width, height]</code>. Change those integers and the pixels change. The 64×128 canvas stays transparent.</p>
+        </div>
+        <div>
+          <h2>How this becomes a sprite sheet</h2>
+          <p>Add new part variants, then add frames to <code>animations</code>. Each frame can offset body groups and swap overlays. A future exporter can draw each frame into adjacent 64×128 cells, producing a standard horizontal PNG sprite sheet.</p>
+        </div>
+        <div>
+          <h2>Recognition priorities used</h2>
+          <ul>
+            <li>Giant asymmetrical neon-pink hair cloud</li>
+            <li>Purple headphone arc and ear cups</li>
+            <li>Bright eyes, side glance, crooked smirk</li>
+            <li>Cropped cyan/pink/yellow shirt</li>
+            <li>Dark flares plus obnoxious platform shoes</li>
+          </ul>
+        </div>
+        <div>
+          <h2>Website-creature plan</h2>
+          <p>Render this same canvas inside a <code>position: fixed</code>, <code>pointer-events: none</code> overlay. Let clicks on the sprite’s separate hit target trigger <code>dance</code>; use transforms for wandering; stop motion under <code>prefers-reduced-motion</code>. Page controls remain clickable.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    "use strict";
+
+    const W = 64;
+    const H = 128;
+
+    // EDIT ME: the deliberately limited, reusable sprite palette.
+    const PALETTE = {
+      ink:      "#241632",
+      ink2:     "#3c2651",
+      plum:     "#64116f",
+      purple:   "#8d22d9",
+      violet:   "#bd3cff",
+      hotPink:  "#ff2bad",
+      pink:     "#ff69c8",
+      blush:    "#f48ea3",
+      skin:     "#ffc0ad",
+      skinHi:   "#ffe0c9",
+      cyan:     "#18e7f2",
+      cyanDark: "#078da4",
+      lime:     "#9dff38",
+      green:    "#42c93b",
+      yellow:   "#ffe04b",
+      orange:   "#ff8426",
+      white:    "#fff8ec",
+      denim:    "#272b43",
+      denimHi:  "#424766",
+      sole:     "#5c1ba5"
+    };
+
+    // EDIT ME: all sprite pixels live here as [paletteName, x, y, width, height].
+    // Large under-shapes create the silhouette; smaller rectangles form highlights
+    // and readable clusters. Drawing order is intentional.
+    const PARTS = {
+      backHair: [
+        ["ink", 29, 3, 12, 2], ["ink", 25, 5, 20, 3], ["ink", 22, 8, 29, 4],
+        ["ink", 20, 12, 36, 5], ["ink", 19, 17, 40, 6], ["ink", 20, 23, 41, 6],
+        ["ink", 22, 29, 39, 7], ["ink", 27, 36, 33, 7], ["ink", 32, 43, 25, 7],
+        ["ink", 37, 50, 17, 5], ["ink", 50, 11, 8, 4], ["ink", 56, 18, 6, 7],
+        ["ink", 55, 28, 8, 5], ["ink", 51, 37, 9, 5], ["ink", 45, 47, 8, 8],
+
+        ["plum", 29, 5, 12, 2], ["hotPink", 26, 7, 19, 3], ["hotPink", 23, 10, 27, 4],
+        ["hotPink", 22, 14, 33, 5], ["hotPink", 21, 19, 36, 5], ["hotPink", 22, 24, 37, 5],
+        ["hotPink", 24, 29, 35, 6], ["hotPink", 29, 35, 29, 6], ["hotPink", 34, 41, 21, 7],
+        ["hotPink", 39, 48, 13, 5], ["hotPink", 50, 13, 6, 3], ["hotPink", 57, 20, 3, 5],
+        ["hotPink", 56, 29, 5, 3], ["hotPink", 53, 38, 5, 3], ["hotPink", 47, 48, 5, 5],
+
+        ["plum", 32, 8, 5, 3], ["pink", 27, 9, 4, 6], ["pink", 37, 10, 8, 2],
+        ["plum", 45, 13, 7, 3], ["pink", 24, 16, 10, 2], ["plum", 35, 16, 15, 2],
+        ["pink", 51, 18, 4, 3], ["pink", 23, 22, 7, 2], ["plum", 32, 21, 19, 3],
+        ["pink", 51, 24, 6, 2], ["pink", 26, 27, 8, 2], ["plum", 35, 27, 18, 3],
+        ["pink", 53, 29, 5, 2], ["plum", 30, 33, 9, 2], ["pink", 40, 34, 13, 2],
+        ["plum", 49, 38, 8, 2], ["pink", 36, 40, 8, 2], ["plum", 43, 44, 10, 2],
+        ["pink", 40, 48, 7, 2], ["plum", 47, 51, 4, 2],
+        ["skinHi", 31, 6, 3, 1], ["skinHi", 41, 12, 4, 1], ["skinHi", 25, 18, 3, 1],
+        ["yellow", 47, 19, 1, 2], ["skinHi", 53, 27, 3, 1], ["skinHi", 45, 34, 3, 1],
+        ["pink", 58, 24, 2, 2], ["pink", 56, 33, 2, 2]
+      ],
+
+      legs: [
+        ["ink", 17, 72, 17, 41], ["ink", 30, 72, 17, 42],
+        ["ink", 14, 101, 21, 16], ["ink", 31, 101, 24, 17],
+        ["denim", 19, 73, 14, 36], ["denim", 32, 73, 13, 36],
+        ["denim", 16, 99, 18, 15], ["denim", 33, 99, 20, 16],
+        ["denimHi", 20, 75, 3, 25], ["denimHi", 34, 77, 3, 27],
+        ["denimHi", 18, 103, 4, 9], ["denimHi", 47, 103, 4, 11],
+        ["plum", 31, 77, 2, 31], ["hotPink", 21, 76, 1, 25],
+        ["cyanDark", 16, 106, 2, 7], ["cyan", 18, 112, 8, 1],
+        ["hotPink", 50, 107, 2, 7], ["pink", 47, 112, 4, 1],
+
+        ["hotPink", 18, 81, 4, 3], ["purple", 22, 82, 4, 4], ["cyan", 19, 85, 5, 3],
+        ["yellow", 24, 87, 5, 4], ["lime", 20, 90, 6, 5], ["hotPink", 18, 95, 5, 4],
+        ["violet", 23, 98, 7, 4], ["cyan", 21, 102, 5, 3], ["orange", 18, 99, 2, 3],
+        ["lime", 27, 93, 3, 4], ["pink", 27, 84, 3, 2],
+
+        ["lime", 39, 88, 4, 3], ["lime", 38, 90, 6, 3],
+        ["ink", 40, 90, 1, 1], ["ink", 42, 90, 1, 1], ["ink", 41, 92, 1, 1],
+        ["hotPink", 42, 99, 1, 7], ["hotPink", 39, 101, 7, 2],
+        ["violet", 40, 99, 5, 6], ["pink", 41, 100, 3, 4], ["yellow", 42, 101, 1, 2],
+
+        ["ink", 10, 111, 27, 13], ["ink", 30, 111, 30, 14],
+        ["purple", 12, 112, 21, 9], ["purple", 34, 112, 21, 9],
+        ["hotPink", 10, 119, 27, 5], ["hotPink", 31, 120, 29, 5],
+        ["sole", 13, 123, 20, 3], ["sole", 34, 124, 21, 2],
+        ["cyan", 27, 119, 7, 4], ["lime", 48, 120, 8, 4],
+        ["cyanDark", 29, 120, 2, 3], ["green", 52, 121, 2, 3],
+        ["violet", 13, 113, 7, 4], ["lime", 20, 112, 10, 2],
+        ["lime", 18, 114, 2, 1], ["lime", 21, 115, 2, 1], ["lime", 24, 116, 2, 1],
+        ["hotPink", 34, 113, 8, 4], ["lime", 43, 112, 10, 4],
+        ["orange", 42, 115, 3, 2], ["orange", 45, 114, 3, 1],
+        ["white", 15, 112, 5, 1], ["white", 45, 112, 5, 1],
+        ["orange", 49, 115, 2, 1], ["yellow", 48, 116, 1, 1], ["yellow", 50, 116, 1, 1],
+        ["ink2", 14, 121, 12, 1], ["ink2", 36, 122, 13, 1]
+      ],
+
+      torso: [
+        ["ink", 18, 48, 26, 25], ["ink", 15, 51, 8, 15], ["ink", 41, 52, 7, 15],
+        ["skin", 23, 62, 18, 12], ["blush", 24, 69, 16, 4],
+        ["plum", 19, 50, 24, 15], ["purple", 17, 53, 7, 12], ["purple", 41, 54, 5, 11],
+        ["cyanDark", 23, 51, 17, 13], ["cyan", 24, 52, 15, 4],
+        ["hotPink", 20, 55, 10, 5], ["yellow", 29, 54, 8, 6],
+        ["violet", 35, 57, 8, 5], ["pink", 22, 61, 9, 4], ["cyan", 32, 61, 8, 3],
+        ["lime", 25, 56, 3, 3], ["hotPink", 38, 53, 4, 3], ["yellow", 20, 60, 3, 3],
+        ["ink2", 19, 64, 24, 3], ["hotPink", 21, 65, 7, 2], ["cyan", 34, 65, 7, 2],
+        ["skinHi", 28, 67, 8, 1], ["blush", 30, 70, 2, 2]
+      ],
+
+      rightArm: [
+        ["ink", 43, 54, 7, 5], ["ink", 47, 57, 6, 15], ["ink", 43, 69, 9, 7],
+        ["skin", 44, 56, 5, 4], ["skin", 48, 59, 4, 12], ["skin", 44, 69, 7, 5],
+        ["skinHi", 48, 59, 2, 9], ["blush", 46, 72, 4, 2],
+        ["purple", 45, 73, 7, 2], ["lime", 46, 72, 1, 3], ["hotPink", 49, 72, 1, 3],
+        ["cyan", 51, 72, 1, 3]
+      ],
+
+      head: [
+        ["ink", 17, 22, 28, 30], ["ink", 19, 49, 23, 5],
+        ["skin", 19, 25, 24, 25], ["skin", 22, 49, 18, 3],
+        ["skinHi", 21, 27, 11, 5], ["skinHi", 22, 34, 18, 9],
+        ["blush", 19, 42, 6, 5], ["blush", 36, 42, 6, 5],
+        ["ink", 22, 35, 7, 2], ["ink", 34, 34, 7, 2],
+        ["white", 23, 36, 6, 4], ["white", 34, 35, 6, 4],
+        ["cyan", 26, 37, 3, 3], ["cyan", 35, 36, 3, 3],
+        ["ink", 27, 37, 2, 2], ["ink", 35, 36, 2, 2],
+        ["white", 27, 37, 1, 1], ["white", 35, 36, 1, 1],
+        ["purple", 22, 33, 7, 1], ["purple", 34, 32, 7, 1],
+        ["blush", 30, 39, 3, 4], ["skinHi", 31, 39, 1, 2],
+        ["ink", 27, 45, 3, 1], ["ink", 30, 46, 7, 2], ["hotPink", 31, 46, 6, 2],
+        ["pink", 32, 46, 4, 1], ["white", 34, 46, 2, 1],
+        ["hotPink", 22, 43, 1, 1], ["hotPink", 40, 42, 1, 1]
+      ],
+
+      headphones: [
+        ["ink", 17, 17, 26, 5], ["ink", 15, 19, 5, 17], ["ink", 41, 20, 6, 16],
+        ["purple", 18, 18, 23, 3], ["violet", 18, 20, 3, 8], ["violet", 42, 22, 3, 12],
+        ["plum", 16, 25, 5, 10], ["purple", 17, 26, 5, 8],
+        ["plum", 41, 25, 6, 11], ["purple", 42, 26, 5, 9],
+        ["violet", 18, 27, 2, 5], ["violet", 44, 27, 2, 6],
+        ["pink", 19, 27, 1, 2], ["white", 44, 28, 1, 2]
+      ],
+
+      frontHair: [
+        ["ink", 18, 20, 25, 8], ["ink", 15, 25, 10, 9], ["ink", 38, 22, 7, 8],
+        ["hotPink", 19, 21, 22, 5], ["hotPink", 17, 26, 8, 6], ["hotPink", 38, 24, 5, 4],
+        ["pink", 22, 21, 8, 2], ["pink", 18, 27, 4, 2], ["plum", 30, 23, 10, 3],
+        ["plum", 20, 30, 5, 2], ["pink", 37, 24, 4, 2],
+        ["hotPink", 17, 31, 3, 6], ["ink", 16, 35, 4, 4], ["hotPink", 17, 35, 2, 2],
+        ["hotPink", 40, 27, 3, 7], ["ink", 40, 32, 4, 4], ["pink", 41, 32, 2, 2],
+        ["skinHi", 23, 21, 4, 1], ["pink", 34, 23, 3, 1]
+      ],
+
+      leftArm: [
+        ["ink", 15, 52, 7, 5], ["ink", 11, 48, 7, 12], ["ink", 6, 43, 8, 8],
+        ["skin", 16, 53, 5, 4], ["skin", 12, 50, 5, 10],
+        ["skin", 8, 44, 5, 7], ["skinHi", 9, 44, 2, 5],
+        ["skin", 5, 42, 3, 3], ["skin", 7, 40, 2, 5], ["skin", 10, 42, 2, 4],
+        ["ink", 4, 41, 2, 2], ["ink", 6, 39, 2, 2], ["ink", 10, 40, 2, 2],
+        ["hotPink", 11, 57, 7, 2], ["lime", 12, 55, 7, 2], ["purple", 11, 53, 7, 2],
+        ["cyan", 13, 54, 1, 4], ["yellow", 16, 54, 1, 4]
+      ],
+
+      accessories: [
+        ["yellow", 27, 50, 2, 2], ["cyan", 29, 51, 2, 2], ["hotPink", 31, 50, 2, 2],
+        ["lime", 33, 51, 2, 2], ["purple", 35, 50, 2, 2],
+        ["lime", 31, 53, 3, 3], ["ink", 32, 54, 1, 1],
+        ["hotPink", 17, 72, 29, 3], ["purple", 19, 73, 25, 3],
+        ["cyan", 22, 73, 5, 2], ["yellow", 30, 73, 4, 2], ["lime", 38, 74, 4, 1],
+        ["white", 28, 74, 2, 1],
+        ["orange", 27, 57, 2, 2], ["cyan", 36, 58, 2, 2]
+      ],
+
+      blinkOverlay: [
+        ["skinHi", 22, 34, 8, 6], ["skinHi", 34, 33, 8, 6],
+        ["ink", 23, 37, 6, 1], ["ink", 35, 36, 6, 1],
+        ["purple", 24, 38, 4, 1], ["purple", 36, 37, 4, 1]
+      ],
+
+      sparkleOverlay: [
+        ["cyan", 8, 27, 1, 5], ["cyan", 6, 29, 5, 1], ["white", 8, 29, 1, 1],
+        ["hotPink", 55, 58, 1, 5], ["hotPink", 53, 60, 5, 1], ["white", 55, 60, 1, 1],
+        ["lime", 7, 94, 1, 3], ["lime", 6, 95, 3, 1]
+      ]
+    };
+
+    const DRAW_ORDER = [
+      "backHair", "legs", "torso", "rightArm", "head",
+      "headphones", "frontHair", "leftArm", "accessories"
+    ];
+
+    // Future-ready frame system. Add arrays named walk, dance, jump, glitch, etc.
+    // A frame can offset any named body part and add one or more overlays.
+    const animations = {
+      idle: [
+        { name: "idle", offsets: {}, overlays: ["sparkleOverlay"] }
+      ],
+      blink: [
+        {
+          name: "tiny chaos",
+          offsets: {
+            backHair: [1, -2], head: [0, -1], headphones: [0, -1],
+            frontHair: [0, -1], torso: [0, -1], rightArm: [0, -1],
+            leftArm: [-1, -2], accessories: [0, -1]
+          },
+          overlays: ["blinkOverlay", "sparkleOverlay"]
+        }
+      ]
+    };
+
+    // Expose the useful guts for future tinkering in DevTools or another script.
+    window.NeonGremlinSprite = { W, H, PALETTE, PARTS, animations };
+
+    const bigCanvas = document.querySelector("#spriteCanvas");
+    const nativeCanvas = document.querySelector("#nativeCanvas");
+    const bigCtx = bigCanvas.getContext("2d", { alpha: true });
+    const nativeCtx = nativeCanvas.getContext("2d", { alpha: true });
+    const scaleInput = document.querySelector("#scale");
+    const scaleOut = document.querySelector("#scaleOut");
+    const poseButton = document.querySelector("#poseButton");
+    const widgetDanceButton = document.querySelector("#widgetDanceButton");
+    const poseName = document.querySelector("#poseName");
+
+    let activeAnimation = "idle";
+
+    function drawRects(ctx, rects, dx = 0, dy = 0) {
+      for (const [color, x, y, w, h] of rects) {
+        ctx.fillStyle = PALETTE[color];
+        ctx.fillRect(x + dx, y + dy, w, h);
+      }
+    }
+
+    function drawFrame(ctx, frame) {
+      ctx.clearRect(0, 0, W, H);
+      ctx.imageSmoothingEnabled = false;
+
+      for (const partName of DRAW_ORDER) {
+        const [dx = 0, dy = 0] = frame.offsets[partName] || [];
+        drawRects(ctx, PARTS[partName], dx, dy);
+      }
+
+      for (const overlayName of frame.overlays || []) {
+        // Face overlays follow the head offset; sparkles remain screen-space pixels.
+        const followsHead = overlayName === "blinkOverlay";
+        const [dx = 0, dy = 0] = followsHead ? (frame.offsets.head || []) : [];
+        drawRects(ctx, PARTS[overlayName], dx, dy);
+      }
+    }
+
+    function render() {
+      const frame = animations[activeAnimation][0];
+      drawFrame(bigCtx, frame);
+      drawFrame(nativeCtx, frame);
+    }
+
+    function setScale(value) {
+      const scale = Number(value);
+      // CSS-only integer enlargement preserves the 64×128 pixel data.
+      bigCanvas.style.width = `${W * scale}px`;
+      bigCanvas.style.height = `${H * scale}px`;
+      scaleOut.value = `${scale}×`;
+    }
+
+    scaleInput.addEventListener("input", (event) => setScale(event.target.value));
+
+    poseButton.addEventListener("click", () => {
+      activeAnimation = activeAnimation === "idle" ? "blink" : "idle";
+      const chaotic = activeAnimation === "blink";
+      poseButton.textContent = chaotic ? "return to suspicious standing" : "activate tiny chaos";
+      poseName.textContent = chaotic ? "BLINK + HAIR BOB + MICRO-BOUNCE" : "IDLE / STANDING";
+      render();
+    });
+
+    widgetDanceButton.addEventListener("click", () => window.MerrySprite?.dance());
+
+    setScale(scaleInput.value);
+    render();
+  </script>
+  <script src="./neon-gremlin-widget.js"></script>
+</body>
+</html>
