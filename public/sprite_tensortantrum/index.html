@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Tensor Tantrum — Nervous-System Test Chamber</title>
+  <style>
+    :root {
+      --void: #0a0014;
+      --ink: #160027;
+      --cyan: #00f2ff;
+      --pink: #ff22bd;
+      --lime: #aaff00;
+      --yellow: #fff22e;
+      --violet: #8c28ff;
+      --paper: #fffaff;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      background: var(--void);
+      color: var(--paper);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 330vh;
+      overflow-x: hidden;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.026) 0 1px, transparent 1px 4px),
+        radial-gradient(circle at 19% 12%, rgba(255,34,189,.24), transparent 22rem),
+        radial-gradient(circle at 81% 30%, rgba(0,242,255,.19), transparent 28rem),
+        linear-gradient(112deg, #090012, #180020 44%, #001322 100%);
+    }
+
+    body::before {
+      content: "TENSOR // TANTRUM // TENSOR // TANTRUM // TENSOR // TANTRUM //";
+      position: fixed;
+      inset: 0 auto 0 4vw;
+      width: 1ch;
+      z-index: 0;
+      color: rgba(170,255,0,.28);
+      font-size: clamp(.75rem, 1.2vw, 1rem);
+      line-height: 1.22;
+      overflow-wrap: anywhere;
+      pointer-events: none;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      width: min(1100px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 9vh 0 28vh;
+    }
+
+    header {
+      min-height: 76vh;
+      display: grid;
+      align-content: center;
+      border-block: 3px solid var(--pink);
+      box-shadow: 0 5px 0 var(--cyan), 0 -5px 0 var(--lime);
+    }
+
+    .kicker {
+      margin: 0 0 1rem;
+      color: var(--lime);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      width: min-content;
+      margin: 0;
+      color: var(--paper);
+      font-size: clamp(3.4rem, 13vw, 10rem);
+      font-weight: 1000;
+      letter-spacing: -.09em;
+      line-height: .68;
+      text-transform: uppercase;
+      text-shadow:
+        -6px 0 0 var(--cyan),
+        6px 0 0 var(--pink),
+        0 7px 0 var(--violet);
+    }
+
+    .intro {
+      max-width: 65ch;
+      margin: 2.6rem 0 0;
+      padding: 1rem 1.2rem;
+      color: var(--paper);
+      background: var(--ink);
+      border-left: 8px solid var(--yellow);
+      font-size: clamp(1rem, 1.5vw, 1.2rem);
+      line-height: 1.6;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      margin-top: 2rem;
+    }
+
+    button,
+    .fake-link {
+      appearance: none;
+      border: 3px solid currentColor;
+      border-radius: 0;
+      padding: .78rem 1rem;
+      color: var(--yellow);
+      background: #140025;
+      box-shadow: 5px 5px 0 currentColor;
+      font: 900 .86rem/1 ui-monospace, monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: translate 90ms linear, box-shadow 90ms linear, color 90ms linear;
+    }
+
+    button:nth-child(2n) { color: var(--cyan); }
+    button:nth-child(3n) { color: var(--pink); }
+    button:nth-child(4n) { color: var(--lime); }
+
+    button:hover,
+    button:focus-visible,
+    .fake-link:hover,
+    .fake-link:focus-visible {
+      color: var(--paper);
+      outline: 3px dashed var(--pink);
+      outline-offset: 5px;
+    }
+
+    button:active {
+      translate: 5px 5px;
+      box-shadow: 0 0 0 currentColor;
+    }
+
+    section {
+      min-height: 72vh;
+      display: grid;
+      align-content: center;
+      margin: 18vh 0;
+      padding: clamp(1.3rem, 4vw, 3.8rem);
+      border: 2px solid rgba(255,255,255,.36);
+      background:
+        linear-gradient(90deg, rgba(0,242,255,.09), transparent 42%),
+        rgba(10,0,20,.72);
+      box-shadow: 13px 13px 0 rgba(140,40,255,.35);
+    }
+
+    section:nth-of-type(even) {
+      margin-left: min(12vw, 130px);
+      border-color: var(--pink);
+      transform: skewY(-1.4deg);
+    }
+
+    section:nth-of-type(odd) {
+      margin-right: min(12vw, 130px);
+      border-color: var(--cyan);
+      transform: skewY(1.1deg);
+    }
+
+    h2 {
+      max-width: 15ch;
+      margin: 0 0 1rem;
+      color: var(--yellow);
+      font-size: clamp(2rem, 6vw, 5rem);
+      line-height: .92;
+      text-transform: uppercase;
+    }
+
+    p { max-width: 64ch; line-height: 1.7; }
+
+    code {
+      padding: .08em .3em;
+      color: var(--lime);
+      background: #200038;
+    }
+
+    #readout {
+      position: fixed;
+      right: 12px;
+      top: 12px;
+      z-index: 30;
+      max-width: min(400px, calc(100vw - 24px));
+      padding: .7rem .8rem;
+      color: var(--lime);
+      background: rgba(5,0,12,.86);
+      border: 1px solid var(--lime);
+      font-size: .72rem;
+      line-height: 1.45;
+      pointer-events: none;
+    }
+
+    .scroll-marker {
+      color: var(--cyan);
+      font-size: clamp(1.3rem, 3vw, 2.2rem);
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 640px) {
+      main { width: calc(100% - 28px); }
+      header { min-height: 86vh; }
+      h1 { font-size: clamp(3.2rem, 24vw, 7rem); }
+      section:nth-of-type(n) {
+        margin-inline: 0;
+        transform: none;
+      }
+      #readout { top: auto; bottom: 8px; font-size: .64rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      button, .fake-link { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <output id="readout" aria-live="polite">BOOTING ERROR ECOLOGY…</output>
+
+  <main>
+    <header>
+      <p class="kicker">A harmless comic pixel meltdown // v1.0.0</p>
+      <h1>Tensor<br>Tantrum</h1>
+      <p class="intro">
+        He is not an image with a jitter filter slapped on his ass. Every pixel, eye, tooth,
+        horn, glyph, RGB ghost, and escaping chunk is drawn by JavaScript. Click him. Click near
+        him. Hover him. Scroll violently. Poke the controls and observe the tiny bastard adapting.
+      </p>
+      <div class="controls" aria-label="Explicit Tensor Tantrum controls">
+        <button type="button" data-tensor-action="flip">Flip his shit</button>
+        <button type="button" data-tensor-action="celebrate">Prismatic victory</button>
+        <button type="button" data-tensor-action="hack">Syntax infestation</button>
+        <button type="button" data-tensor-action="jump">Boing.exe</button>
+        <button type="button" data-tensor-action="teleport">Misplace him</button>
+        <button type="button" data-tensor-action="tantrum">Maximum tantrum</button>
+      </div>
+    </header>
+
+    <section>
+      <p class="scroll-marker">↓ Scroll = pressure, not distance ↓</p>
+      <h2>Chroma mites eat momentum.</h2>
+      <p>
+        Scrolling feeds his chromatic-aberration species. Fast scrolling makes him surf the signal;
+        using the wheel while the pointer is directly over him produces a stronger mutation.
+      </p>
+      <div class="controls">
+        <button type="button">Ordinary unlabeled button</button>
+        <button type="button">Another button with a different deterministic reaction</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Clicks have blast radii.</h2>
+      <p>
+        A direct hit causes a full tantrum. A nearby hit startles him away from the impact. A far
+        click on a control still reaches the control normally, while Tensor chooses a reaction from
+        its label. His overlay uses <code>pointer-events: none</code>, so he cannot smother the page.
+      </p>
+      <div class="controls">
+        <a class="fake-link" href="#memory">This is a real anchor</a>
+        <button type="button" aria-label="Open the improbable machine">Improbable machine</button>
+      </div>
+    </section>
+
+    <section id="memory">
+      <h2>The glitches remember being fed.</h2>
+      <p>
+        Three bounded error species compete inside him: chroma mites, bit fleas, and syntax spores.
+        Scroll feeds chroma. Buttons feed bits or syntax. Direct clicks feed the whole ecosystem.
+        Their current populations persist only in this browser tab via <code>sessionStorage</code>.
+      </p>
+      <div class="controls">
+        <button type="button" onclick="TensorTantrum.setMotion(false)">Park the body</button>
+        <button type="button" onclick="TensorTantrum.setMotion(true)">Release the body</button>
+        <button type="button" onclick="document.querySelector('#readout').textContent = JSON.stringify(TensorTantrum.status())">Read nervous system</button>
+      </div>
+    </section>
+  </main>
+
+  <script
+    src="./tensor-tantrum.js"
+    data-size="166"
+    data-roam="true"
+    data-side="right"
+    data-near-radius="270"
+  ></script>
+  <script>
+    const readout = document.querySelector("#readout");
+    window.addEventListener("tensor-tantrum:state", (event) => {
+      const { action, source, ecology } = event.detail;
+      readout.textContent = `STATE: ${action.toUpperCase()} // SOURCE: ${source} // ` +
+        `CHROMA ${ecology.chroma}  BITS ${ecology.bits}  SYNTAX ${ecology.syntax}`;
+    });
+  </script>
+</body>
+</html>
