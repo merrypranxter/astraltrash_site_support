@@ -225,12 +225,13 @@
 
   <main>
     <header>
-      <p class="kicker">A harmless comic pixel meltdown // v1.0.0</p>
+      <p class="kicker">A harmless comic pixel meltdown // v1.1.0</p>
       <h1>Tensor<br>Tantrum</h1>
       <p class="intro">
         He is not an image with a jitter filter slapped on his ass. Every pixel, eye, tooth,
         horn, glyph, RGB ghost, and escaping chunk is drawn by JavaScript. Click him. Click near
-        him. Hover him. Scroll violently. Poke the controls and observe the tiny bastard adapting.
+        him. Hover him. Scroll violently. Poke a control and watch the tiny bastard zip over,
+        attack your cursor, then fuck directly back off to wherever he came from.
       </p>
       <div class="controls" aria-label="Explicit Tensor Tantrum controls">
         <button type="button" data-tensor-action="flip">Flip his shit</button>
@@ -250,21 +251,27 @@
         using the wheel while the pointer is directly over him produces a stronger mutation.
       </p>
       <div class="controls">
-        <button type="button">Ordinary unlabeled button</button>
-        <button type="button">Another button with a different deterministic reaction</button>
+        <button type="button">Ordinary cursor victim</button>
+        <button type="button">A differently flavored cursor victim</button>
       </div>
     </section>
 
     <section>
       <h2>Clicks have blast radii.</h2>
       <p>
-        A direct hit causes a full tantrum. A nearby hit startles him away from the impact. A far
-        click on a control still reaches the control normally, while Tensor chooses a reaction from
-        its label. His overlay uses <code>pointer-events: none</code>, so he cannot smother the page.
+        A direct hit causes a full tantrum. A nearby hit startles him away from the impact. Clicking
+        an eligible control launches a three-phase hunt: dash, glitch-maul, and retreat. The control
+        still works normally because his overlay uses <code>pointer-events: none</code>.
       </p>
       <div class="controls">
         <a class="fake-link" href="#memory">This is a real anchor</a>
         <button type="button" aria-label="Open the improbable machine">Improbable machine</button>
+        <button type="button" data-no-tensor-attack>Explicitly quiet button</button>
+      </div>
+      <div data-tensor-art style="margin-top:2rem;padding:1.2rem;border:3px dashed var(--pink);background:repeating-linear-gradient(135deg,#27003c 0 12px,#001c2b 12px 24px)">
+        <strong>PROTECTED ART ZONE</strong>
+        <p>This simulates artwork or a shader control station. Tensor will not attack or startle here.</p>
+        <button type="button">Protected art control</button>
       </div>
     </section>
 
@@ -296,6 +303,13 @@
       const { action, source, ecology } = event.detail;
       readout.textContent = `STATE: ${action.toUpperCase()} // SOURCE: ${source} // ` +
         `CHROMA ${ecology.chroma}  BITS ${ecology.bits}  SYNTAX ${ecology.syntax}`;
+    });
+    window.addEventListener("tensor-tantrum:attack", (event) => {
+      readout.textContent = `CURSOR HUNT: ${event.detail.phase.toUpperCase()} // ` +
+        `FLAVOR: ${event.detail.flavor} // SOURCE: ${event.detail.source}`;
+    });
+    window.addEventListener("tensor-tantrum:attack-skipped", (event) => {
+      readout.textContent = `CURSOR HUNT REFUSED // ${event.detail.reason.toUpperCase()}`;
     });
   </script>
 </body>
