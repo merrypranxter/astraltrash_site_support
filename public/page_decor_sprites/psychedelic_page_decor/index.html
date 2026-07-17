@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE TRIP REPORT ARCHIVE - psyche deco demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Double:wght@100..900&display=swap" rel="stylesheet">
+<style>
+  body {
+    background: #050505; color: #b9a8d8;
+    font-family: "Bitcount Prop Double", monospace;
+    margin: 0; padding: 5rem 1rem 10rem;
+  }
+  main { max-width: 620px; margin: 0 auto; position: relative; z-index: 10; }
+  h1 { color: #FF2BD6; font-weight: 900; }
+  h2 { color: #00F0FF; }
+  p { line-height: 1.7; }
+  .tape {
+    white-space: nowrap; overflow: hidden;
+    border-top: 1px solid #9D4DFF; border-bottom: 1px solid #9D4DFF;
+    color: #9D4DFF; padding: 0.4rem 0; margin: 2rem 0; font-size: 0.9rem;
+  }
+  .tape span { display: inline-block; animation: tape 24s linear infinite; }
+  @keyframes tape { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .dossier {
+    border: 1px dashed #39FF14; padding: 1rem; margin: 1.5rem 0;
+    color: #8fce8f; background: rgba(57,255,20,0.03);
+  }
+  .note { color: #555; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<div id="root">
+<main>
+  <h1>THE TRIP REPORT ARCHIVE</h1>
+  <p class="note">psychedelics-section deco demo &mdash; breathe, moire, flicker, tracers, eyes, glossolalia, melt.</p>
+
+  <div class="tape"><span class="ticker">THE TRIP REPORT ARCHIVE // ENTITY DOSSIER: DECLASSIFIED // THE WEIRDNESS HAS STRUCTURE // FIELD TEXT // THE TRIP REPORT ARCHIVE // ENTITY DOSSIER: DECLASSIFIED // THE WEIRDNESS HAS STRUCTURE // FIELD TEXT //&nbsp;</span></div>
+
+  <h2>recurring phenomena</h2>
+  <p>The interesting part is not that psychedelics make things weird. The interesting part is that the weirdness has structure. Certain visual grammars, spatial behaviors, entities, moods, and symbolic systems recur across years and entirely different circumstances.</p>
+
+  <div class="dossier">
+    ENTITY_CLASS: WATCHER<br>
+    ENTITY_CONTACT: PERIPHERAL, PERSISTENT<br>
+    NOTES: present at threshold of vision. recedes when observed directly. do not pursue.
+  </div>
+
+  <h2>impossible geometry</h2>
+  <p>A lot of my art is an attempt to rebuild that structure using code: feedback, interference, symmetry, chromatic splitting, cellular systems, recursive geometry, corrupted signal, and mathematics behaving like it has a secret personality.</p>
+
+  <h2>the archive is an experience</h2>
+  <p>Move the cursor and watch the edges of the room. Wait long enough and something passes through. Read the tape. Watch the tape back.</p>
+  <p>Scroll. The walls are breathing. The grid underneath is not still. The headings cannot always hold their form.</p>
+
+  <p class="note">console: AstralDeco.modules.eyes.destroy() etc.</p>
+</main>
+</div>
+
+<script src="pixel-deco.js"></script>
+<script src="deco-breathe.js"></script>
+<script src="deco-moire.js"></script>
+<script src="deco-flicker.js"></script>
+<script src="deco-tracers.js"></script>
+<script src="deco-eyes.js"></script>
+<script src="deco-glossolalia.js"></script>
+<script src="deco-melt.js"></script>
+<script>
+  AstralDeco.modules.moire.init({ zIndex: 0 });
+  AstralDeco.modules.breathe.init({ zIndex: 9990, period: 6 });
+  AstralDeco.modules.flicker.init({ root: "#root", min: 25, max: 50 });
+  AstralDeco.modules.tracers.init();
+  AstralDeco.modules.eyes.init({ count: 5 });
+  AstralDeco.modules.glossolalia.init({ selector: ".ticker", interval: 7 });
+  AstralDeco.modules.melt.init({ selector: "h1, h2", interval: 9 });
+</script>
+</body>
+</html>
