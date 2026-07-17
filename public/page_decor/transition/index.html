@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASTRAL TRASH - arcade transition demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Double:wght@100..900&display=swap" rel="stylesheet">
+<style>
+  body {
+    background: #050505; color: #b9a8d8;
+    font-family: "Bitcount Prop Double", monospace;
+    margin: 0; padding: 5rem 1rem 8rem;
+  }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 9000;
+    display: flex; gap: 1rem; padding: 1rem; background: rgba(5,5,5,.9);
+    border-bottom: 1px solid #241632; }
+  nav a { color: #00F0FF; text-decoration: none; text-transform: uppercase; }
+  nav a:hover { color: #FF2BD6; }
+  main { max-width: 560px; margin: 0 auto; position: relative; z-index: 10; }
+  h1 { font-weight: 900; }
+  p { line-height: 1.7; }
+  .note { color: #555; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/home" data-nav>Home</a>
+  <a href="/psychedelics" data-nav>Psychedelics</a>
+  <a href="/karaoke" data-nav>Karaoke</a>
+</nav>
+<main id="page"></main>
+
+<script src="pixel-deco.js"></script>
+<script src="deco-transition.js"></script>
+<script>
+  const PAGES = {
+    "/home":          { color: "#00F0FF", title: "ASTRAL TRASH", body: "Click the nav links. Neon blocks cascade over the screen, the page swaps while fully covered, and the blocks dissolve off the far side. Under a second, all pixels." },
+    "/psychedelics":  { color: "#FF2BD6", title: "TRIP REPORT ARCHIVE", body: "The weirdness has structure. This page materialized underneath the wipe at the exact midpoint, arcade-cabinet style." },
+    "/karaoke":       { color: "#FF6B00", title: "SHITTY KARAOKE TIME", body: "DECK_B READ: SUCCESS. The sweep edge is the arcade machine changing modes." }
+  };
+  function render(path) {
+    const p = PAGES[path] || PAGES["/home"];
+    document.getElementById("page").innerHTML =
+      '<h1 style="color:' + p.color + '">' + p.title + '</h1><p>' + p.body + '</p>' +
+      '<p class="note">history: ' + path + ' - back button wipes too.</p>';
+  }
+  render("/home");
+
+  AstralDeco.modules.transition.init({
+    selector: "[data-nav]",
+    onCovered(link) {
+      const path = link.getAttribute("href");
+      history.pushState({}, "", path);
+      render(path);
+    }
+  });
+  // back/forward buttons get the wipe too
+  window.addEventListener("popstate", () =>
+    AstralDeco.modules.transition.play(() => render(location.pathname)));
+</script>
+</body>
+</html>
